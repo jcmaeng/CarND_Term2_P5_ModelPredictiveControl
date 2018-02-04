@@ -36,13 +36,43 @@ In this project, I use the `Kinematic model` which is simplified version of dyna
 The prediction horizon(T) is the duration over which future predictions are made. T is the product of two other Variables, N and dt. N is the number of timesteps in the horizon. dt is how much time elapsed between actuations. 
 A good approach to setting N, dt, and T is to first determine a reasonable range for T and then tune dt and N appropriately, keeping the effect of each in mind.
 
+For `dt`, I tried values within 0.05(50ms) <= dt <= 0.20(200ms). However, if dt = 100ms, it may cause some unstability. So it is better to select `dt` value slightly larger than 100ms (latency).
+
+For `N`, I tested values within 10 <= N <= 20. During the test, `N * dt` > 2.3s are not good. Then, after choosing `dt`, I select `N` as small as possible.
+
+This table shows my trial and error to tune N and dt values.
+|N  | dt  | N * dt| Max speed|  Comment             |
+|-!-|-!---|-!----|-----!-----|----------------------|
+|10 | 0.05| 0.5 |   Error   | bumpy, run out of track |
+|10 | 0.10| 1 |   81.29   | good   |
+|20 | 0.10| 2 |   89.08   | a little bit unstable during left turn |
+|20 | 0.20| 4 |   80.12   | a little bit unstable with frequent breaking in curves|
+|20 | 0.15| 3 |   84.45   | a little bit unstable with some wrong predictions |
+|20 | 0.16| 3.2 |   82.74   | a little bit unstable with some wrong predictions |
+|20 | 0.18| 3.6 |   80.04   | a little bit unstable with frequent breaking in curves|
+|18 | 0.18| 3.24 |   78.68   | a little bit unstable during some curves (wrong predictions)|
+|18 | 0.15| 2.70 |   83.76    | a little bit unstable during some curves (wrong predictions)|
+| 15 | 0.15 | 2.25 |   81.36    | good |
+| **13** | **0.13** | 1.69 |   83.26    | good|
+
+Below lines are the weight values which I used in my code.
+```
+// weight for variables
+const int w_cte = 5000;
+const int w_epsi = 4000;
+const int w_v = 1;
+const int w_delta = 20;
+const int w_a = 20;
+const int w_delta_diff = 1000;
+const int w_a_diff = 5;
+```
 
 ### 3. Polynomial Fitting and MPC Preprocessing
 To predict the next points of the vehicle trajectory, a third-degree polynomial is being used in this model. The predicted waypoints are being transformed from global coordinates to respective vehicle coordinates.
 
 ### 4. Model Predictive Control with Latency
 To apply latency in this project, I use the equations as follows.
- - x_delay = x + v * cos(psi) * latency
+ - x_delay = x + v * latency
  - psi_delay = psi + v * steer_value / Lf * latency
  - v_delay = v + throttle_value * latency
 

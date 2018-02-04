@@ -6,20 +6,20 @@
 using CppAD::AD;
 
 // weight for variables
-const int w_cte = 1500;
-const int w_epsi = 3500;
+const int w_cte = 5000;
+const int w_epsi = 4000;
 const int w_v = 1;
 const int w_delta = 20;
 const int w_a = 20;
-const int w_delta_diff = 100;
-const int w_a_diff = 10;
+const int w_delta_diff = 1000;
+const int w_a_diff = 5;
 
 // reference values
-double ref_v = 60.0;
+double ref_v = 100.0;
 
 // TODO: Set the timestep length and duration
-size_t N = 15;
-double dt = 0.15;
+size_t N = 13;
+double dt = 0.13;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -235,7 +235,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // options for IPOPT solver
   std::string options;
   // Uncomment this if you'd like more print information
-  options += "Integer print_level  0\n";
+  options += "Integer print_level  2\n";
   // NOTE: Setting sparse to true allows the solver to take advantage
   // of sparse routines, this makes the computation MUCH FASTER. If you
   // can uncomment 1 of these and see if it makes a difference or not but
@@ -245,7 +245,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   options += "Sparse  true        reverse\n";
   // NOTE: Currently the solver has a maximum time limit of 0.5 seconds.
   // Change this as you see fit.
-  options += "Numeric max_cpu_time          0.5\n";
+  options += "Numeric max_cpu_time          100.0\n";
 
   // place to return solution
   CppAD::ipopt::solve_result<Dvector> solution;

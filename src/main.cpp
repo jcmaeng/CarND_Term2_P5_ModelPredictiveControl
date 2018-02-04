@@ -105,8 +105,8 @@ int main() {
             double x = ptsx[i] - px;
             double y = ptsy[i] - py;
 
-            ptsx[i] = (x * cos(-psi) - y * sin(-psi));
-            ptsy[i] = (x * sin(-psi) + y * cos(-psi));
+            ptsx[i] = (x * cos(psi) + y * sin(psi));
+            ptsy[i] = (-x * sin(psi) + y * cos(psi));
           }
           
           double* ptrx = &ptsx[0];
@@ -130,7 +130,7 @@ int main() {
           const double Lf = 2.67;
 
           // Applying latency
-          double x_delay = v * cos(psi) * latency;
+          double x_delay = v * latency;
           double psi_delay = - v * steer_value / Lf * latency;
           double v_delay = v + throttle_value * latency;
           double cte_delay = cte + v * sin(epsi) * latency;
@@ -141,6 +141,7 @@ int main() {
           state << x_delay, 0.0, psi_delay, v_delay, cte_delay, epsi_delay;
 
           auto vars = mpc.Solve(state, coeffs);
+          // std::cout << "steer: " << vars[0] << "\tthrottle: " << vars[1] << std::endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
@@ -154,6 +155,7 @@ int main() {
           vector<double> mpc_y_vals = {state[1]};
 
           for(size_t i=2; i<vars.size();i++){
+            // std::cout << "vars-" << i << ": " << vars[i] << std::endl;
             if(i%2 == 0){
               mpc_x_vals.push_back(vars[i]);
             } else {
