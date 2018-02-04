@@ -6,21 +6,19 @@
 using CppAD::AD;
 
 // weight for variables
-double w_cte = 1500.0;
-double w_epsi = 3500.0;
-double w_v = 1.0;
-double w_delta = 20.0;
-double w_a = 20.0;
-double w_delta_diff = 1500.0;
-double w_a_diff = 2.0;
+const int w_cte = 1500;
+const int w_epsi = 3500;
+const int w_v = 1;
+const int w_delta = 20;
+const int w_a = 20;
+const int w_delta_diff = 100;
+const int w_a_diff = 10;
 
 // reference values
-double ref_cte = 0.0;
-double ref_epsi = 0.0;
-double ref_v = 100.0;
+double ref_v = 60.0;
 
 // TODO: Set the timestep length and duration
-size_t N = 10;
+size_t N = 15;
 double dt = 0.15;
 
 // This value assumes the model presented in the classroom is used.
@@ -61,8 +59,8 @@ class FG_eval {
 
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < N; t++) {
-      fg[0] += w_cte * CppAD::pow(vars[cte_start + t] - ref_cte, 2);
-      fg[0] += w_epsi * CppAD::pow(vars[epsi_start + t] - ref_epsi, 2);
+      fg[0] += w_cte * CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += w_epsi * CppAD::pow(vars[epsi_start + t], 2);
       fg[0] += w_v * CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
 
@@ -177,12 +175,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   }
 
   // Set the initial variable values
-  vars[x_start] = x;
-  vars[y_start] = y;
-  vars[psi_start] = psi;
-  vars[v_start] = v;
-  vars[cte_start] = cte;
-  vars[epsi_start] = epsi;
+  // vars[x_start] = x;
+  // vars[y_start] = y;
+  // vars[psi_start] = psi;
+  // vars[v_start] = v;
+  // vars[cte_start] = cte;
+  // vars[epsi_start] = epsi;
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
@@ -274,9 +272,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   result.push_back(solution.x[delta_start]);
   result.push_back(solution.x[a_start]);
 
-  for(size_t i=0; i < N-1; i++) {
-    result.push_back(solution.x[x_start + 1 + i]);
-    result.push_back(solution.x[y_start + 1 + i]);
+  for(size_t i=0; i < N; i++) {
+    result.push_back(solution.x[x_start + i]);
+    result.push_back(solution.x[y_start + i]);
   }
 
   return result;

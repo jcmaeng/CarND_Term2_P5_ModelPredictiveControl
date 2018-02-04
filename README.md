@@ -1,6 +1,50 @@
 # **MPC Control**
 
 ## Goal
+- Move the car on the road with keeping the center of the track using MPC
+
+## Description
+
+### 1. The Model
+In this project, I use the `Kinematic model` which is simplified version of dynamic models by ignoring  tire forces, gravity, and mass. This simplification reduces the accuracy of the models, but it also makes them more tractable. At low and moderate speeds, kinematic models often approximate the actual vehicle dynamics.
+
+* State information (provied by the simulator)
+ - x: x position of the vehicle
+ - y: y position of the vehicle
+ - psi: orientation of the vehicle
+ - v: velocity of the vehicle
+
+* Error state (calculated in the program)
+ - cte: Cross Track Error of the vehicle
+ - epsi: Orientation error of the vehicle
+
+* Actuator constraints
+ - delta: steering angle
+ - a: throttle value
+
+* State update equations
+ - x(t+1) = x(t) + v(t) * cos(psi(t)) * dt
+ - y(t+1) = y(t) + v(t) * sin(psi(t)) * dt
+ - psi(t+1) = psi(t) + v(t) / Lf * delta * dt
+ - v(t+1) = v(t) + a(t) * dt
+
+* Error update equations
+ - cte(t+1) = f(x(t)) - y(t) + (v(t) * sin(epsi(t)) * dt)
+ - epsi(t+1) = psi(t) - psi_des(t) + (v(t) / Lf * delta(t) * dt)
+
+### 2. Timestep Length and Elapsed Duration
+The prediction horizon(T) is the duration over which future predictions are made. T is the product of two other Variables, N and dt. N is the number of timesteps in the horizon. dt is how much time elapsed between actuations. 
+A good approach to setting N, dt, and T is to first determine a reasonable range for T and then tune dt and N appropriately, keeping the effect of each in mind.
+
+
+### 3. Polynomial Fitting and MPC Preprocessing
+To predict the next points of the vehicle trajectory, a third-degree polynomial is being used in this model. The predicted waypoints are being transformed from global coordinates to respective vehicle coordinates.
+
+### 4. Model Predictive Control with Latency
+To apply latency in this project, I use the equations as follows.
+ - x_delay = x + v * cos(psi) * latency
+ - psi_delay = psi + v * steer_value / Lf * latency
+ - v_delay = v + throttle_value * latency
 
 
 ========

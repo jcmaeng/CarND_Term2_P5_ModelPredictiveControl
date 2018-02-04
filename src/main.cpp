@@ -102,11 +102,11 @@ int main() {
           double throttle_value = j[1]["throttle"];
 
           for(size_t i=0; i < ptsx.size(); i++){
-            double shift_x = ptsx[i] - px;
-            double shift_y = ptsy[i] - py;
+            double x = ptsx[i] - px;
+            double y = ptsy[i] - py;
 
-            ptsx[i] = (shift_x * cos(psi) + shift_y * sin(psi));
-            ptsy[i] = (-shift_x * sin(psi) + shift_y * cos(psi));
+            ptsx[i] = (x * cos(-psi) - y * sin(-psi));
+            ptsy[i] = (x * sin(-psi) + y * cos(-psi));
           }
           
           double* ptrx = &ptsx[0];
@@ -130,12 +130,11 @@ int main() {
           const double Lf = 2.67;
 
           // Applying latency
-          double x_delay = v * latency;
+          double x_delay = v * cos(psi) * latency;
           double psi_delay = - v * steer_value / Lf * latency;
           double v_delay = v + throttle_value * latency;
           double cte_delay = cte + v * sin(epsi) * latency;
           double epsi_delay = epsi + psi_delay;
-
 
           Eigen::VectorXd state(6);
           //state << x, y, psi, v, cte, epsi;
@@ -143,19 +142,16 @@ int main() {
 
           auto vars = mpc.Solve(state, coeffs);
 
-          steer_value = vars[0]/deg2rad(25) ; //Lf
-          throttle_value = vars[1];
-
-
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle_value;
+          // Multiplying by Lf takes into account vehicle's turning ability
+          msgJson["steering_angle"] = vars[0]/(deg2rad(25) * Lf);
+          msgJson["throttle"] = vars[1];
 
           //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals;
-          vector<double> mpc_y_vals;
+          vector<double> mpc_x_vals = {state[0]};
+          vector<double> mpc_y_vals = {state[1]};
 
           for(size_t i=2; i<vars.size();i++){
             if(i%2 == 0){
