@@ -43,7 +43,7 @@ For `N`, I tested values within 10 <= N <= 20. During the test, `N * dt` > 2.3s 
 This table shows my trial and error to tune N and dt values.
 
 |N  | dt  | N * dt| Max speed|  Comment             |
-|-:-|-:---|-:----|-----:-----|----------------------|
+|:--:|:---:|:---:|:---------:|----------------------|
 |10 | 0.05| 0.5 |   Error   | bumpy, run out of track |
 |10 | 0.10| 1 |   81.29   | good   |
 |20 | 0.10| 2 |   89.08   | a little bit unstable during left turn |
