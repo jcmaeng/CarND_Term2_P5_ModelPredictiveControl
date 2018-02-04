@@ -17,7 +17,7 @@ double w_a_diff = 2.0;
 // reference values
 double ref_cte = 0.0;
 double ref_epsi = 0.0;
-double ref_v = 40.0;
+double ref_v = 100.0;
 
 // TODO: Set the timestep length and duration
 size_t N = 10;
@@ -134,6 +134,7 @@ class FG_eval {
       // epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
       fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
+
       fg[1 + psi_start + t] = psi1 - (psi0 - v0 * delta0 / Lf * dt);
       fg[1 + v_start + t] = v1 - (v0 + a0 * dt);
       fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
@@ -176,13 +177,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   }
 
   // Set the initial variable values
-  // vars[x_start] = state[0];
-  // vars[y_start] = state[1];
-  // vars[psi_start] = state[2];
-  // vars[v_start] = state[3];
-  // vars[cte_start] = state[4];
-  // vars[epsi_start] = state[5];
-  // std::cout << "state: " << state[0] << "\t" << state[1] << "\t" << state[2] << "\t" << state[3] << "\t" << state[4] << "\t" << state[5] << std::endl;
+  vars[x_start] = x;
+  vars[y_start] = y;
+  vars[psi_start] = psi;
+  vars[v_start] = v;
+  vars[cte_start] = cte;
+  vars[epsi_start] = epsi;
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
@@ -213,6 +213,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
+
   constraints_lowerbound[x_start] = x;
   constraints_lowerbound[y_start] = y;
   constraints_lowerbound[psi_start] = psi;
