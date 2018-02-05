@@ -1,6 +1,6 @@
 # **MPC Control**
 
-![image]("./image/sim_result.png")
+![image]("https://github.com/jcmaeng/CarND_Term2_P5_ModelPredictiveControl/blob/master/image/sim_result.png")
 ## Goal
 - Move the car on the road with keeping the center of the track using MPC
 
