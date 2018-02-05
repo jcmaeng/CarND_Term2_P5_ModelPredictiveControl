@@ -41,8 +41,9 @@ For `dt`, I tried values within 0.05(50ms) <= dt <= 0.20(200ms). However, if dt 
 For `N`, I tested values within 10 <= N <= 20. During the test, `N * dt` > 2.3s are not good. Then, after choosing `dt`, I select `N` as small as possible.
 
 This table shows my trial and error to tune N and dt values.
+
 |N  | dt  | N * dt| Max speed|  Comment             |
-|-!-|-!---|-!----|-----!-----|----------------------|
+|:--:|:---:|:---:|:---------:|----------------------|
 |10 | 0.05| 0.5 |   Error   | bumpy, run out of track |
 |10 | 0.10| 1 |   81.29   | good   |
 |20 | 0.10| 2 |   89.08   | a little bit unstable during left turn |
@@ -77,7 +78,7 @@ To apply latency in this project, I use the equations as follows.
  - v_delay = v + throttle_value * latency
 
 
-========
+---
 # CarND-Controls-MPC
 Self-Driving Car Engineer Nanodegree Program
 
